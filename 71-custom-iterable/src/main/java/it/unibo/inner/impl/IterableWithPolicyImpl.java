@@ -24,8 +24,8 @@ public class IterableWithPolicyImpl<T> implements IterableWithPolicy<T>{
     }
 
     public IterableWithPolicyImpl(T[] elements, Predicate<T> predicate){
-        array = Arrays.asList(elements);
-        myFilter = predicate;
+        this.array = Arrays.asList(elements);
+        this.myFilter = predicate;
     }
 
     @Override
@@ -43,12 +43,18 @@ public class IterableWithPolicyImpl<T> implements IterableWithPolicy<T>{
 
         @Override
         public boolean hasNext() {
-            return currentElement < array.size();
+            if(currentElement < iterableArray.size()){
+                if(!myFilter.test(iterableArray.get(currentElement)) ){
+                    currentElement++;
+                    return hasNext();
+                }
+            }
+            return currentElement < iterableArray.size();
         }
 
         @Override
         public T next() {
-            if(!hasNext()){
+            if(currentElement >= iterableArray.size()){
                 throw new NoSuchElementException();
             }
 
@@ -57,12 +63,16 @@ public class IterableWithPolicyImpl<T> implements IterableWithPolicy<T>{
 
             return nextElement;
         }
+    }
 
+    @Override
+    public String toString(){
+        return array.toString();
     }
 
     @Override
     public void setIterationPolicy(Predicate<T> filter) {
-        
+       this.myFilter = filter; 
     }
     
 }
